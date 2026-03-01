@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Vortex Gem Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root{ --card:#111; --border:#1f1f1f; --text:#eaeaea; --muted:#b0b0b0; --accent: #3498db; }
+        *{box-sizing:border-box}
+        body{
+            margin:0; font-family: sans-serif;
+            background: linear-gradient(rgba(0,0,0,.85),rgba(0,0,0,.85)), url("https://i.postimg.cc/5tN1ZpxV/pack.png") center/cover no-repeat fixed;
+            color:var(--text); min-height:100vh; padding:20px;
+        }
+        .app{ max-width:800px; margin:auto; display:grid; gap:20px; }
+        .card{ background:var(--card); border-radius:12px; padding:20px; border: 1px solid var(--border); }
+        h1, h2 { margin-top:0; text-align:center; }
+        .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:15px; }
+        label{ font-size:.75rem; color:var(--muted); display: block; margin-bottom: 5px; }
+        input, select{ width:100%; padding:10px; border-radius:6px; border:1px solid var(--border); background:#050505; color:var(--text); }
+        .result{ margin-top:15px; padding:15px; background:rgba(255,255,255,0.05); border-radius:6px; border-left: 4px solid var(--accent); line-height: 1.5; }
+        .footer{ text-align:center; margin-top:30px; font-size:0.8rem; color:var(--muted); }
+
+        /* Bouton IP */
+        .ip-bar{ display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; }
+        .ip-text{ font-size:1rem; font-weight:bold; letter-spacing:0.05em; color:var(--text); }
+        .ip-btn{
+            padding:8px 18px; border-radius:6px; border:1px solid var(--accent);
+            background:rgba(52,152,219,0.15); color:var(--accent);
+            font-size:0.85rem; font-weight:bold; cursor:pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .ip-btn:hover{ background:rgba(52,152,219,0.3); }
+        .ip-btn:active{ transform:scale(0.96); }
+        .ip-btn.copied{ border-color:#2ecc71; color:#2ecc71; background:rgba(46,204,113,0.15); }
+    </style>
+</head>
+<body>
+
+<h1>Vortex Gem</h1>
+
+<div class="app">
+
+    <!-- IP -->
+    <div class="card">
+        <h2>🖥️ Serveur</h2>
+        <div class="ip-bar">
+            <button class="ip-btn" id="ipBtn" onclick="copyIP()">📋 Copier l'IP</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>💎 Ressources → Shards</h2>
+        <div class="grid">
+            <div><label>Fer (27 → 2)</label><input type="number" id="iron" value="0" min="0"></div>
+            <div><label>Or (27 → 3)</label><input type="number" id="gold" value="0" min="0"></div>
+            <div><label>Émeraude (18 → 3)</label><input type="number" id="emerald" value="0" min="0"></div>
+            <div><label>Diamant (18 → 3)</label><input type="number" id="diamond" value="0" min="0"></div>
+            <div><label>Bloc de fer (3 → 2)</label><input type="number" id="ironBlock" value="0" min="0"></div>
+            <div><label>Bloc d'or (3 → 3)</label><input type="number" id="goldBlock" value="0" min="0"></div>
+            <div><label>Bloc de diamant (2 → 3)</label><input type="number" id="diamondBlock" value="0" min="0"></div>
+            <div><label>Ancient Debris (1 → 6)</label><input type="number" id="ancient" value="0" min="0"></div>
+        </div>
+        <div class="result" id="resourceResult">Shards : 0 | Compressed : 0</div>
+    </div>
+
+    <div class="card">
+        <h2>🛠️ Progression des Pioches</h2>
+        <select id="pickaxeStep">
+            <option value="0">1 bois → Iron Pickaxe</option>
+            <option value="1">Iron + 36 shards → Diamond F2</option>
+            <option value="2">Diamond F2 + 36 shards → Diamond F3</option>
+            <option value="3">Diamond F3 + Netherite Ingot</option>
+            <option value="4">Netherite F3 + 1 Compressed → E5</option>
+            <option value="5">Netherite E5 + 2 Compressed → E7</option>
+            <option value="6">Netherite E7 + 4 Compressed → E12</option>
+        </select>
+        <div class="result" id="pickaxeResult">—</div>
+    </div>
+
+    <div class="card">
+        <h2>🎯 Objectif</h2>
+        <div class="grid" style="grid-template-columns: 2fr 1fr;">
+            <input type="number" id="targetValue" placeholder="Quantité..." min="0">
+            <select id="targetType">
+                <option value="shard">Shards</option>
+                <option value="compressed">Compressed</option>
+            </select>
+        </div>
+        <div class="result" id="goalResult">—</div>
+    </div>
+</div>
+
+<div class="footer">Site non officiel — fan du Vortex Gem • fait par <b>Belyxzor</b> • Gem par <b>Moxyto</b><br><span id="calcCounter" style="font-size:0.75rem; opacity:0.6;">0 calculs effectués</span></div>
+
+<script>
+    function copyIP() {
+        navigator.clipboard.writeText('89.81.231.48:25565').then(() => {
+            const btn = document.getElementById('ipBtn');
+            btn.textContent = '✅ Copié !';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = "📋 Copier l'IP";
+                btn.classList.remove('copied');
+            }, 2000);
+        });
+    }
+
+    const pickStep = document.getElementById('pickaxeStep');
+    const targetVal = document.getElementById('targetValue');
+    const targetType = document.getElementById('targetType');
+
+    document.addEventListener('input', function() {
+        let totalS = 0;
+        totalS += Math.floor((document.getElementById('iron').value || 0) / 27) * 2;
+        totalS += Math.floor((document.getElementById('gold').value || 0) / 27) * 3;
+        totalS += Math.floor((document.getElementById('emerald').value || 0) / 18) * 3;
+        totalS += Math.floor((document.getElementById('diamond').value || 0) / 18) * 3;
+        totalS += Math.floor((document.getElementById('ironBlock').value || 0) / 3) * 2;
+        totalS += Math.floor((document.getElementById('goldBlock').value || 0) / 3) * 3;
+        totalS += Math.floor((document.getElementById('diamondBlock').value || 0) / 2) * 3;
+        totalS += (document.getElementById('ancient').value || 0) * 6;
+
+        document.getElementById('resourceResult').innerHTML = 
+            `<b>Shards :</b> ${totalS} | <b>Compressed :</b> ${Math.floor(totalS / 64)}`;
+
+        const steps = [
+            "🔨 1 bois ➜ <b>Iron</b> (F1, E2, M)",
+            "💎 Iron + <b>36 shards</b> ➜ <b>Diamond</b> (F2, E2, M)",
+            "✨ Diamond F2 + <b>36 shards</b> ➜ <b>Diamond</b> (F3, E4, M)",
+            "🔥 Diamond F3 + <b>Netherite Ingot</b> ➜ <b>Netherite</b> (F3, E4, M)",
+            "⚡ Netherite F3 + <b>1 Compressed</b> ➜ <b>Netherite</b> (F3, E5, M)",
+            "🌟 Netherite E5 + <b>2 Compressed</b> ➜ <b>Netherite</b> (F3, E7, M)",
+            "👑 Netherite E7 + <b>4 Compressed</b> ➜ <b>Netherite</b> (F3, E12, M)"
+        ];
+        document.getElementById('pickaxeResult').innerHTML = steps[pickStep.value];
+
+        let val = parseInt(targetVal.value) || 0;
+        if(val > 0) {
+            let req = targetType.value === "compressed" ? val * 64 : val;
+
+            // Recommandation selon la pioche
+            const step = parseInt(pickStep.value);
+            let reco = '';
+            if (step === 0) {
+                // Iron pickaxe → fer
+                reco = `⛏️ Avec ta pioche : mine du <b>Fer</b> — il te faut <b>${Math.ceil(req / 2 * 27)}</b> Fer`;
+            } else if (step === 1 || step === 2) {
+                // Diamond → diamant ou émeraude
+                reco = `💎 Avec ta pioche : mine du <b>Diamant</b> — il te faut <b>${Math.ceil(req / 3 * 18)}</b> Diamants<br>` +
+                       `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ou de l'<b>Émeraude</b> — il te faut <b>${Math.ceil(req / 3 * 18)}</b> Émeraudes`;
+            } else {
+                // Netherite → diamant ou émeraude (encore plus rapide)
+                reco = `🔥 Avec ta pioche : mine du <b>Diamant</b> — il te faut <b>${Math.ceil(req / 3 * 18)}</b> Diamants<br>` +
+                       `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ou de l'<b>Émeraude</b> — il te faut <b>${Math.ceil(req / 3 * 18)}</b> Émeraudes`;
+            }
+
+            document.getElementById('goalResult').innerHTML = 
+                `Total requis : <b>${req} shards</b><br>` +
+                `🔴 Zone PvP : <b>${Math.ceil(req/6)}</b> Ancient Debris<br>` +
+                `🟢 Safe : <b>${Math.ceil(req/3*18)}</b> Diamants<br><br>` +
+                reco;
+        } else {
+            document.getElementById('goalResult').innerHTML = "—";
+        }
+    });
+
+    // Compteur de calculs uniques
+    let calcCount = 0;
+    let lastSnapshot = '';
+
+    function getSnapshot() {
+        const fields = ['iron','gold','emerald','diamond','ironBlock','goldBlock','diamondBlock','ancient'];
+        return fields.map(id => document.getElementById(id).value).join(',')
+            + '|' + document.getElementById('pickaxeStep').value
+            + '|' + document.getElementById('targetValue').value
+            + '|' + document.getElementById('targetType').value;
+    }
+
+    document.addEventListener('input', function() {
+        const snap = getSnapshot();
+        if (snap !== lastSnapshot && lastSnapshot !== '') {
+            calcCount++;
+            document.getElementById('calcCounter').textContent = calcCount + ' calcul' + (calcCount > 1 ? 's' : '') + ' effectué' + (calcCount > 1 ? 's' : '');
+        }
+        lastSnapshot = snap;
+    });
+
+    window.onload = () => {
+        document.dispatchEvent(new Event('input'));
+        lastSnapshot = getSnapshot();
+    };
+</script>
+
+</body>
+</html>
