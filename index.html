@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <title>Vortex Gen Calculator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://i.postimg.cc/gJm8hxbX/image-2026-03-01-111650773.png" type="image/png">
     <style>
         :root{ --card:#111; --border:#1f1f1f; --text:#eaeaea; --muted:#b0b0b0; --accent: #3498db; }
         *{box-sizing:border-box}
         body{
             margin:0; font-family: sans-serif;
-            background: linear-gradient(rgba(0,0,0,.85),rgba(0,0,0,.85)), url("https://i.postimg.cc/5tN1ZpxV/pack.png") center/cover no-repeat fixed;
+            background: linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)), url("https://i.postimg.cc/wMP1wvZD/d5ff5873993c04e53084e494d48104f6.png") center/cover no-repeat fixed;
             color:var(--text); min-height:100vh; padding:20px;
         }
         .app{ max-width:800px; margin:auto; display:grid; gap:20px; }
@@ -33,11 +34,26 @@
         .ip-btn:hover{ background:rgba(52,152,219,0.3); }
         .ip-btn:active{ transform:scale(0.96); }
         .ip-btn.copied{ border-color:#2ecc71; color:#2ecc71; background:rgba(46,204,113,0.15); }
+
+        /* Mobile optimisé */
+        @media (max-width: 600px) {
+            body { padding: 12px; }
+            .app { gap: 12px; }
+            .card { padding: 14px; }
+            h2 { font-size: 0.95rem; }
+            .grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            input, select { padding: 8px; font-size: 0.9rem; }
+            .result { padding: 10px; font-size: 0.85rem; }
+            .footer a { display: block; margin: 6px auto; width: fit-content; }
+        }
+        @media (max-width: 380px) {
+            .grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
-<h1>Vortex Gen</h1>
+<div style="text-align:center; padding:10px 0 5px;"><img src="https://i.postimg.cc/gJm8hxbX/image-2026-03-01-111650773.png" alt="Vortex Gen" style="height:140px; object-fit:contain; display:block; margin:0 auto;"></div>
 
 <div class="app">
 
@@ -91,7 +107,7 @@
     </div>
 </div>
 
-<div class="footer">Site non officiel — fan du Vortex Gem • fait par <b>Belyxzor</b> • Gem par <b>Moxyto</b><br><span id="calcCounter" style="font-size:0.75rem; opacity:0.6;">0 calculs effectués</span></div>
+<div class="footer">Site non officiel — fan du Vortex Gen • fait par <b>Belyxzor</b> • Gem par <b>Moxyto</b><br><span id="calcCounter" style="font-size:0.75rem; opacity:0.6;">0 calculs effectués</span><br><br><a href="https://ko-fi.com/vortexgen/goal?g=0" target="_blank" style="display:inline-block; margin-top:4px; padding:8px 20px; background:#ff5e5b; color:#fff; border-radius:6px; text-decoration:none; font-weight:bold; font-size:0.85rem;">☕ Soutenir le serveur</a> &nbsp; <a href="https://discord.gg/jRPcGnSaBh" target="_blank" style="display:inline-block; margin-top:4px; padding:8px 20px; background:#5865F2; color:#fff; border-radius:6px; text-decoration:none; font-weight:bold; font-size:0.85rem;">💬 Discord</a></div>
 
 <script>
     function copyIP() {
